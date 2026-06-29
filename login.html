@@ -526,6 +526,10 @@
         }
         localStorage.setItem(KEY, JSON.stringify(existing));
       } catch {}
+      const _cleanParams = new URLSearchParams(location.search);
+      _cleanParams.delete('accounts');
+      const _qs = _cleanParams.toString();
+      history.replaceState(null, '', location.pathname + (_qs ? '?' + _qs : ''));
     }
 
     /* Account switcher: ?google_hint=email → auto-open Google sign-in for that account */
