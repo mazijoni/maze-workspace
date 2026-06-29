@@ -507,10 +507,26 @@
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const dest = new URLSearchParams(window.location.search).get('redirect') || 'workspace/';
+        const dest = new URLSearchParams(window.location.search).get('redirect') || './';
         window.location.href = dest;
       }
     });
+
+    /* Import saved accounts passed from the portfolio via ?accounts=base64json */
+    const _incomingAccounts = new URLSearchParams(window.location.search).get('accounts');
+    if (_incomingAccounts) {
+      try {
+        const KEY      = 'ws_saved_accounts';
+        const incoming = JSON.parse(atob(_incomingAccounts));
+        const existing = JSON.parse(localStorage.getItem(KEY) || '[]');
+        for (const a of incoming) {
+          const idx = existing.findIndex(e => e.uid === a.uid);
+          if (idx < 0) existing.push(a);
+          else if (a.lastSeen > existing[idx].lastSeen) existing[idx] = a;
+        }
+        localStorage.setItem(KEY, JSON.stringify(existing));
+      } catch {}
+    }
 
     /* Account switcher: ?google_hint=email → auto-open Google sign-in for that account */
     const _googleHint = new URLSearchParams(window.location.search).get('google_hint');
