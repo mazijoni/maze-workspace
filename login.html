@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace — Maze Development</title>
+  <link rel="icon" href="img/logo.svg" type="image/svg"/>
+  <link rel="icon" href="img/logo_black.svg" type="image/svg" media="(prefers-color-scheme: light)"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:     #0d0b09;
+      --paper-2:   #161310;
+      --paper-3:   #1e1a15;
+      --ink:       #ece8df;
+      --ink-2:     #c8c2b3;
+      --ink-mute:  #88826f;
+      --ink-dim:   #57534a;
+      --line:      rgba(236,232,223,.10);
+      --line-2:    rgba(236,232,223,.22);
+      --accent:    #c772fe;
+      --ok:        #4caf7d;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --sans:  'Geist', system-ui, sans-serif;
+      --mono:  'Geist Mono', ui-monospace, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      background-image: radial-gradient(rgba(236,232,223,.022) 1px, transparent 1px);
+      background-size: 3px 3px;
+      opacity: .65;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--accent); color: #0a0008; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--paper); }
+    ::-webkit-scrollbar-thumb { background: var(--ink-dim); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* ── TOP BAR ──────────────────────────────────────────── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 52px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in oklab, var(--paper) 85%, transparent);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .topbar-logo {
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+
+    .topbar-logo b { color: var(--accent); font-weight: 500; }
+
+    .topbar-back {
+      font-family: var(--mono); font-size: 10.5px;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--ink-dim);
+      display: flex; align-items: center; gap: 8px;
+      transition: color .15s;
+    }
+
+    .topbar-back:hover { color: var(--ink-2); }
+
+    .topbar-back::before {
+      content: '←'; font-family: var(--sans);
+      font-size: 14px; transition: transform .15s;
+    }
+
+    .topbar-back:hover::before { transform: translateX(-3px); }
+
+    /* ── LAYOUT ───────────────────────────────────────────── */
+    .page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+      position: relative; z-index: 1;
+    }
+
+    /* ── LEFT PANEL ───────────────────────────────────────── */
+    .panel-left {
+      padding: 52px 64px 48px;
+      display: flex; flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--line-2);
+    }
+
+    .panel-left-content {
+      padding-top: 80px;
+    }
+
+    .panel-eyebrow {
+      font-family: var(--mono); font-size: 10.5px;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: var(--ink-mute);
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .panel-eyebrow::before {
+      content: '';
+      display: block; width: 24px; height: 1px;
+      background: var(--accent);
+    }
+
+    .panel-title {
+      font-family: var(--serif);
+      font-size: clamp(48px, 6vw, 88px);
+      line-height: .92; font-weight: 400;
+      letter-spacing: -.025em;
+      color: var(--ink); margin-bottom: 28px;
+    }
+
+    .panel-title em { font-style: italic; color: var(--accent); }
+
+    .panel-desc {
+      font-size: 15px; color: var(--ink-mute);
+      line-height: 1.7; max-width: 42ch;
+      margin-bottom: 48px;
+    }
+
+    .panel-features {
+      display: flex; flex-direction: column; gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .panel-feature {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13.5px; color: var(--ink-mute);
+    }
+
+    .panel-feature::before {
+      content: '';
+      display: block; width: 6px; height: 6px;
+      background: var(--ink-dim); flex-shrink: 0;
+    }
+
+    .panel-bottom {
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+
+    .panel-bottom a { transition: color .15s; }
+    .panel-bottom a:hover { color: var(--ink-mute); }
+
+    /* ── RIGHT PANEL / FORM ───────────────────────────────── */
+    .panel-right {
+      padding: 52px 72px 48px;
+      display: flex; flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-wrap {
+      width: 100%; max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .form-heading {
+      font-family: var(--serif); font-size: 28px;
+      font-weight: 400; color: var(--ink);
+      letter-spacing: -.01em; margin-bottom: 6px;
+    }
+
+    .form-sub {
+      font-size: 13.5px; color: var(--ink-mute);
+      margin-bottom: 32px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--line-2);
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--ink-dim);
+      padding: 10px 20px 10px 0;
+      margin-bottom: -1px;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+
+    .tab-btn.active {
+      color: var(--ink);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-btn:hover:not(.active) { color: var(--ink-mute); }
+
+    /* Form sections */
+    .form-section { display: none; flex-direction: column; gap: 18px; }
+    .form-section.active { display: flex; }
+
+    /* Messages */
+    .message {
+      display: none; padding: 12px 14px;
+      font-family: var(--mono); font-size: 11.5px;
+      line-height: 1.5; letter-spacing: .02em;
+      border: 1px solid transparent;
+    }
+
+    .message.error {
+      display: block;
+      border-color: rgba(255, 80, 80, .4);
+      color: #ff8080;
+      background: rgba(255, 80, 80, .06);
+    }
+
+    .message.success {
+      display: block;
+      border-color: rgba(76, 175, 125, .4);
+      color: var(--ok);
+      background: rgba(76, 175, 125, .06);
+    }
+
+    /* Form groups */
+    .form-group {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .form-group label {
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+
+    .form-group input {
+      background: var(--paper-2);
+      border: 1px solid var(--line-2);
+      color: var(--ink);
+      font-family: var(--sans); font-size: 14.5px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+    }
+
+    .form-group input::placeholder { color: var(--ink-dim); }
+
+    .form-group input:focus { border-color: var(--accent); }
+
+    /* Submit button */
+    .btn-submit {
+      height: 44px; padding: 0 20px;
+      background: var(--ink); color: var(--paper);
+      border: 1px solid var(--ink);
+      font-family: var(--sans); font-size: 13px;
+      font-weight: 600; letter-spacing: .04em;
+      cursor: pointer; width: 100%;
+      transition: background .15s, border-color .15s, transform .1s;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--accent); border-color: var(--accent); color: #0a0008;
+    }
+
+    .btn-submit:active { transform: translateY(1px); }
+    .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Divider */
+    .form-divider {
+      display: flex; align-items: center; gap: 14px;
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: .16em; text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+
+    .form-divider::before, .form-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--line-2);
+    }
+
+    /* Google button */
+    .btn-google {
+      height: 44px; padding: 0 20px;
+      background: transparent; color: var(--ink-2);
+      border: 1px solid var(--line-2);
+      font-family: var(--sans); font-size: 13px;
+      font-weight: 500; letter-spacing: .02em;
+      cursor: pointer; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: border-color .15s, color .15s;
+    }
+
+    .btn-google svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-google:hover { border-color: var(--ink-2); color: var(--ink); }
+
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border: 1.5px solid rgba(255,255,255,.25);
+      border-top-color: var(--ink);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      margin-right: 6px; vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 800px) {
+      .page { grid-template-columns: 1fr; }
+      .panel-left { display: none; }
+      .panel-right { padding: 52px 32px 48px; justify-content: flex-start; padding-top: 80px; }
+      .topbar { padding: 0 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .panel-right { padding: 80px 20px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <span class="topbar-logo">Maze<b>_</b>Dev &mdash; Workspace</span>
+    <a href="index.html" class="topbar-back">Back to site</a>
+  </div>
+
+  <!-- PAGE -->
+  <div class="page">
+
+    <!-- LEFT: branding -->
+    <div class="panel-left">
+      <div class="panel-left-content">
+        <p class="panel-eyebrow">Members area</p>
+        <h1 class="panel-title">
+          Work<br><em>space.</em>
+        </h1>
+        <p class="panel-desc">
+          Project management, kanban boards, media gallery, and real-time collaboration — all in one place.
+        </p>
+        <div class="panel-features">
+          <div class="panel-feature">Boards, nodes &amp; kanban</div>
+          <div class="panel-feature">Media &amp; links gallery</div>
+          <div class="panel-feature">Real-time Firebase sync</div>
+          <div class="panel-feature">Admin panel</div>
+        </div>
+      </div>
+      <div class="panel-bottom">
+        <a href="index.html">Maze Development</a> &nbsp;·&nbsp;
+        <a href="portfolio/">Portfolio</a>
+      </div>
+    </div>
+
+    <!-- RIGHT: form -->
+    <div class="panel-right">
+      <div class="form-wrap">
+        <h2 class="form-heading">Sign in</h2>
+        <p class="form-sub">Access your workspace.</p>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+          <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+        </div>
+
+        <!-- Sign In -->
+        <div class="form-section active" id="section-signin">
+          <div id="signin-message" class="message"></div>
+          <div class="form-group">
+            <label for="signin-email">Email</label>
+            <input type="email" id="signin-email" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="signin-password">Password</label>
+            <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password">
+          </div>
+          <button class="btn-submit" id="signin-btn" onclick="signIn()">Sign in</button>
+          <div class="form-divider">or</div>
+          <button class="btn-google" id="google-signin-btn" onclick="signInWithGoogle()">
+            Continue with Google
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sign Up -->
+        <div class="form-section" id="section-signup">
+          <div id="signup-message" class="message"></div>
+          <div class="form-group">
+            <label for="signup-name">Display name</label>
+            <input type="text" id="signup-name" placeholder="Your name" autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Min. 6 characters" autocomplete="new-password">
+          </div>
+          <button class="btn-submit" id="signup-btn" onclick="signUp()">Create account</button>
+          <div class="form-divider">or</div>
+          <button class="btn-google" id="google-signup-btn" onclick="signInWithGoogle()">
+            Sign up with Google
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /page -->
+
+  <!-- DEBUG: captures errors to localStorage before page navigates away -->
+  <script>
+    window.__debugErrors = JSON.parse(localStorage.getItem('__debugErrors') || '[]');
+    if (window.__debugErrors.length) {
+      const el = document.createElement('div');
+      el.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a0000;color:#ff8888;font-family:monospace;font-size:12px;padding:1rem;z-index:99999;max-height:40vh;overflow:auto;border-top:2px solid #ff4444;white-space:pre-wrap;';
+      el.textContent = '── Captured errors from previous page load ──\n' + window.__debugErrors.join('\n');
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '✕ Clear';
+      closeBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:#ff4444;color:#fff;border:none;padding:4px 10px;cursor:pointer;font-family:monospace;';
+      closeBtn.onclick = () => { localStorage.removeItem('__debugErrors'); el.remove(); };
+      el.appendChild(closeBtn);
+      document.body.appendChild(el);
+      localStorage.removeItem('__debugErrors');
+    }
+    const origError = console.error.bind(console);
+    console.error = (...args) => {
+      origError(...args);
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      const log = JSON.parse(localStorage.getItem('__debugErrors') || '[]');
+      log.push(new Date().toISOString() + '  ' + msg);
+      localStorage.setItem('__debugErrors', JSON.stringify(log.slice(-20)));
+    };
+    window.addEventListener('error', e => console.error('window.onerror:', e.message, e.filename, e.lineno));
+    window.addEventListener('unhandledrejection', e => console.error('unhandledrejection:', e.reason));
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged,
+      signInWithEmailAndPassword, createUserWithEmailAndPassword,
+      GoogleAuthProvider, signInWithPopup, updateProfile
+    } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+
+    const USE_LOCAL_CONFIG = 'auto';
+
+    let firebaseConfig;
+    const isLocal = USE_LOCAL_CONFIG === true ||
+      (USE_LOCAL_CONFIG === 'auto' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1'));
+
+    if (isLocal) {
+      try { ({ firebaseConfig } = await import('./firebase.local.js')); }
+      catch { ({ firebaseConfig } = await import('./firebase.js')); }
+    } else {
+      ({ firebaseConfig } = await import('./firebase.js'));
+    }
+
+    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('%%')) {
+      document.body.innerHTML = `<div style="font-family:monospace;color:#ff8080;background:#0d0b09;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;">
+        <div>
+          <p style="font-size:1.1rem;margin-bottom:1rem;">⚠ Firebase not configured.</p>
+          <p style="color:#88826f;font-size:0.85rem;">The API key placeholder was not substituted.<br>
+          Check GitHub → Settings → Secrets and variables → Actions,<br>
+          and that GitHub Pages is serving from the <code>gh-pages</code> branch.</p>
+        </div>
+      </div>`;
+      throw new Error('Firebase config placeholders not substituted.');
+    }
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const dest = new URLSearchParams(window.location.search).get('redirect') || 'workspace/';
+        window.location.href = dest;
+      }
+    });
+
+    /* Account switcher: ?google_hint=email → auto-open Google sign-in for that account */
+    const _googleHint = new URLSearchParams(window.location.search).get('google_hint');
+    if (_googleHint) {
+      const hintProvider = new GoogleAuthProvider();
+      hintProvider.setCustomParameters({ login_hint: _googleHint });
+      /* Small delay so the page renders before the popup opens */
+      setTimeout(() => {
+        signInWithPopup(auth, hintProvider).catch((e) => {
+          const msg = friendlyError(e.code);
+          if (msg) showMessage('signin-message', msg, 'error');
+        });
+      }, 300);
+    }
+
+    /* Account switcher: ?email=xxx → pre-fill email for password accounts */
+    const _switchEmail = new URLSearchParams(window.location.search).get('email');
+    if (_switchEmail && !_googleHint) {
+      const emailInput = document.getElementById('signin-email');
+      if (emailInput) {
+        emailInput.value = _switchEmail;
+        setTimeout(() => document.getElementById('signin-password')?.focus(), 80);
+      }
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (loading) {
+        btn.disabled = true;
+        btn.dataset.original = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner"></span>Loading…';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.dataset.original || btn.innerHTML;
+      }
+    }
+
+    function showMessage(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'message ' + type;
+    }
+
+    function friendlyError(code) {
+      const map = {
+        'auth/user-not-found':        'No account found with that email.',
+        'auth/wrong-password':        'Incorrect password. Please try again.',
+        'auth/invalid-credential':    'Incorrect email or password.',
+        'auth/email-already-in-use':  'An account with this email already exists.',
+        'auth/weak-password':         'Password must be at least 6 characters.',
+        'auth/invalid-email':         'Please enter a valid email address.',
+        'auth/popup-closed-by-user':  'Sign-in popup was closed.',
+        'auth/cancelled-popup-request': '',
+        'auth/unauthorized-domain':   'This domain is not authorised in Firebase. Add it under Authentication → Settings → Authorized domains.',
+        'auth/internal-error':        'An internal error occurred. Check the browser console.',
+      };
+      return map[code] || `Something went wrong (${code || 'unknown'}). Please try again.`;
+    }
+
+    window.switchTab = function(tab) {
+      document.getElementById('section-signin').classList.toggle('active', tab === 'signin');
+      document.getElementById('section-signup').classList.toggle('active', tab === 'signup');
+      document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    };
+
+    window.signIn = async function() {
+      const email    = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      if (!email || !password) { showMessage('signin-message', 'Please fill in all fields.', 'error'); return; }
+      setLoading('signin-btn', true);
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        showMessage('signin-message', friendlyError(e.code), 'error');
+        setLoading('signin-btn', false);
+      }
+    };
+
+    window.signUp = async function() {
+      const name     = document.getElementById('signup-name').value.trim();
+      const email    = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      if (!name || !email || !password) { showMessage('signup-message', 'Please fill in all fields.', 'error'); return; }
+      setLoading('signup-btn', true);
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+      } catch (e) {
+        showMessage('signup-message', friendlyError(e.code), 'error');
+        setLoading('signup-btn', false);
+      }
+    };
+
+    window.signInWithGoogle = async function() {
+      try {
+        await signInWithPopup(auth, googleProvider);
+      } catch (e) {
+        console.error('signInWithPopup error:', e.code, e.message);
+        const msg = friendlyError(e.code);
+        if (msg) showMessage('signin-message', msg, 'error');
+      }
+    };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const signinActive = document.getElementById('section-signin').classList.contains('active');
+      if (signinActive) window.signIn(); else window.signUp();
+    });
+  </script>
+</body>
+</html>
