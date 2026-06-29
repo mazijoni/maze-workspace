@@ -33,6 +33,7 @@ import { initGmail }       from "./apps/gmail.js";
 import { initEurovision, initEurovisionUser } from "./apps/eurovision.js";
 import { initSharing }     from "./sharing.js";
 import { initAnalytics }   from "./apps/analytics.js";
+import { initCv }          from "./apps/cv.js";
 import { loadUserFeatures } from "./features.js";
 
 const ADMIN_EMAIL = "maze.development.admin@gmail.com";
@@ -70,28 +71,33 @@ function _initBlueMap() {
     if (saved) urlEl.value = saved;
 
     function _apply() {
-        const raw = urlEl.value.trim() || "https://server.tail8d3368.ts.net/";
+        const raw = urlEl.value.trim();
+        if (!raw) {
+            content.innerHTML = `
+                <div class="bluemap-open-wrap">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity:.3"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <p style="color:var(--text-muted)">Paste a URL above and click <strong>Go</strong> to embed a website here.</p>
+                </div>`;
+            return;
+        }
         localStorage.setItem("bluemap_url", raw);
 
         let url;
         try { url = new URL(raw); } catch {
-            content.innerHTML = `<div class="bluemap-open-wrap"><p style="color:var(--text-muted)">Invalid URL.</p></div>`;
+            content.innerHTML = `<div class="bluemap-open-wrap"><p style="color:var(--text-muted)">Invalid URL — include the protocol, e.g. <code>https://example.com</code></p></div>`;
             return;
         }
 
         if (url.protocol === "https:") {
-            content.innerHTML = `<iframe src="${url.href}" class="bluemap-frame" title="ServerMap" allowfullscreen></iframe>`;
+            content.innerHTML = `<iframe src="${url.href}" class="bluemap-frame" title="Web Viewer" allowfullscreen></iframe>`;
         } else {
             content.innerHTML = `
                 <div class="bluemap-open-wrap">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity:.3"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-                    <p><strong>HTTP can't be embedded here.</strong> To get the full in-page experience:</p>
-                    <p class="bluemap-hint">Run this on your Minecraft server (Tailscale must be installed):</p>
-                    <code class="bluemap-code">tailscale serve https / http://localhost:8182</code>
-                    <p class="bluemap-hint">Then paste the resulting <code>https://…ts.net</code> URL above and click&nbsp;Go.</p>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity:.3"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <p><strong>HTTP sites can't be embedded.</strong> Use an <code>https://</code> URL, or open it in a new tab instead.</p>
                     <a href="${url.href}" target="_blank" rel="noopener noreferrer" class="ws-btn ws-btn-ghost" style="margin-top:.75rem">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        Open in new tab for now
+                        Open in new tab
                     </a>
                 </div>`;
         }
@@ -116,6 +122,7 @@ async function onUserReady(user) {
     initGmail(db, user, googleClientId ?? "");
     initEurovisionUser(db, user.uid, user.displayName || user.email?.split("@")[0] || "", user.photoURL || "");
     initAnalytics(db);
+    initCv(db, user);
 
     /* Admin-only: initialise the admin panel dashboard */
     if (user.email === ADMIN_EMAIL) {

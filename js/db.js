@@ -97,4 +97,12 @@ export const refs = {
     /** admin/serviceConfig — global admin-managed service domain settings */
     serviceConfig: (db) =>
         doc(db, "admin", "serviceConfig"),
+
+    /** users/{uid}/cvs — CV Builder documents */
+    cvs: (db, uid) =>
+        collection(db, "users", uid, "cvs"),
+
+    /** users/{uid}/cvs/{cvId} — single CV doc */
+    cvDoc: (db, uid, cvId) =>
+        doc(db, "users", uid, "cvs", cvId),
 };
