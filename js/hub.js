@@ -4,7 +4,7 @@
 
 import { isFeatureEnabled } from "./features.js";
 
-const _HIDDEN_BY_DEFAULT = new Set(['sheet', 'bluemap']);
+const _HIDDEN_BY_DEFAULT = new Set(['bluemap']);
 const _PREF_KEY = 'hub_tab_prefs';
 
 function _loadTabPrefs() {
@@ -45,7 +45,17 @@ function _initTabSettings() {
     });
 }
 
+function _migratePrefs() {
+    const prefs = _loadTabPrefs();
+    // 'sheet' was hidden by default before; reset any false pref so the new default (visible) applies
+    if (prefs['sheet'] === false) {
+        delete prefs['sheet'];
+        localStorage.setItem(_PREF_KEY, JSON.stringify(prefs));
+    }
+}
+
 export function initHub() {
+    _migratePrefs();
     const btns = document.querySelectorAll(".hub-app-btn");
 
     btns.forEach(btn => {

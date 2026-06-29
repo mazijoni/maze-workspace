@@ -1,0 +1,436 @@
+/* ================================================================
+   cv.css — CV Builder (in-hub app, see #app-cv in index.html)
+   Uses the same design tokens as workspace.css
+   ================================================================ */
+
+#app-cv {
+    flex-direction: column;
+    --panel-w: 300px;
+}
+
+/* ================================================================
+   HEADER
+   ================================================================ */
+.cv-header {
+    flex-shrink: 0;
+    height: var(--topbar-h);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 1rem 0 0.85rem;
+    gap: 10px;
+    font-size: 13px; font-weight: 600; color: var(--text-primary);
+}
+
+.cv-title-sep {
+    color: var(--border-hover);
+    font-size: 18px;
+    font-weight: 200;
+    flex-shrink: 0;
+}
+
+.cv-title-input {
+    background: transparent; border: none; outline: none;
+    color: var(--text-muted); font-family: inherit; font-size: 13px;
+    min-width: 0; flex: 0 1 240px;
+    padding: 4px 8px;
+    transition: background var(--transition), color var(--transition);
+}
+.cv-title-input:hover  { background: var(--bg-card); color: var(--text-secondary); }
+.cv-title-input:focus  { background: var(--bg-card); color: var(--text-primary); }
+
+.cv-header-right { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-shrink: 0; }
+
+/* Header buttons */
+.cv-tb-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text-muted); font-family: inherit; font-size: 12.5px;
+    padding: 0 12px; height: 30px; cursor: pointer;
+    transition: all var(--transition); white-space: nowrap;
+    text-decoration: none;
+}
+.cv-tb-btn:hover { color: var(--text-primary); border-color: var(--border-hover); }
+
+.cv-tb-btn-primary {
+    background: var(--accent); border-color: var(--accent); color: #0a0008;
+    font-weight: 600;
+}
+.cv-tb-btn-primary:hover { opacity: .88; color: #0a0008; }
+
+/* Theme swatch */
+.cv-theme-swatch {
+    width: 12px; height: 12px; flex-shrink: 0;
+    border: 1.5px solid rgba(236,232,223,.2);
+    display: inline-block;
+}
+
+/* Theme dropdown */
+.cv-theme-picker { position: relative; }
+.cv-theme-dropdown {
+    position: absolute; top: calc(100% + 6px); right: 0;
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 14px; width: 230px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.7);
+    display: none; z-index: 300;
+}
+.cv-theme-dropdown.open { display: block; }
+.cv-theme-section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--text-muted); margin-bottom: 9px;
+}
+.cv-color-grid  { display: flex; flex-wrap: wrap; gap: 6px; }
+.cv-color-btn {
+    width: 22px; height: 22px; border: 2px solid transparent; cursor: pointer;
+    transition: transform var(--transition), border-color var(--transition);
+}
+.cv-color-btn:hover { transform: scale(1.2); }
+.cv-color-btn.active { border-color: var(--text-primary); }
+
+.cv-layout-options { display: flex; gap: 6px; margin-top: 10px; }
+.cv-layout-opt {
+    flex: 1; padding: 5px 0;
+    background: var(--bg-input); border: 1px solid var(--border);
+    color: var(--text-muted); font-family: inherit; font-size: 11.5px;
+    cursor: pointer; transition: all var(--transition);
+}
+.cv-layout-opt.active,
+.cv-layout-opt:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--text-primary); }
+
+/* ================================================================
+   MAIN LAYOUT
+   ================================================================ */
+#cv-body-wrap {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* ── LEFT SIDEBAR ── */
+#cv-sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+}
+
+.cv-sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px 8px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.cv-list { flex: 1; overflow-y: auto; padding: 4px 0; }
+.cv-list-empty {
+    font-size: 12px; color: var(--text-muted);
+    text-align: center; padding: 24px 16px; line-height: 1.65;
+}
+
+.cv-list-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px; cursor: pointer;
+    transition: background var(--transition);
+    position: relative;
+}
+.cv-list-item:hover  { background: var(--bg-card); }
+.cv-list-item.active { background: var(--accent-dim); }
+.cv-list-item.active .cv-list-item-name { color: var(--accent); }
+
+.cv-list-item-icon { flex-shrink: 0; color: var(--text-muted); }
+.cv-list-item-name {
+    flex: 1; font-size: 13px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: var(--text-secondary);
+}
+.cv-list-item-menu {
+    flex-shrink: 0; opacity: 0;
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; padding: 2px; display: flex; align-items: center;
+    transition: opacity var(--transition), color var(--transition);
+}
+.cv-list-item:hover .cv-list-item-menu { opacity: 1; }
+.cv-list-item-menu:hover { color: var(--text-primary); }
+
+/* Context menu */
+.cv-item-context-menu {
+    position: absolute; right: 4px; top: calc(100% - 2px);
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 4px; z-index: 400; min-width: 150px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.6);
+}
+.cv-item-context-menu button {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 7px 10px;
+    background: none; border: none;
+    color: var(--text-secondary); font-family: inherit; font-size: 12.5px;
+    cursor: pointer; transition: background var(--transition), color var(--transition);
+}
+.cv-item-context-menu button:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.cv-item-context-menu button.danger { color: var(--danger); }
+.cv-item-context-menu button.danger:hover { background: rgba(224,85,85,.1); }
+
+/* ── ICON BUTTON ── */
+.cv-icon-btn {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; transition: background var(--transition), color var(--transition);
+    flex-shrink: 0;
+}
+.cv-icon-btn:hover { background: var(--bg-card); color: var(--text-primary); }
+.cv-icon-btn.danger:hover { background: rgba(224,85,85,.1); color: var(--danger); }
+
+/* ================================================================
+   CANVAS AREA
+   ================================================================ */
+#cv-canvas-wrap {
+    flex: 1; overflow-y: auto;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 24px; gap: 16px;
+    background: #0a0907;
+    position: relative;
+}
+
+.cv-empty-state {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    color: var(--text-muted); text-align: center;
+}
+.cv-empty-state p { font-size: 13px; }
+
+
+/* ================================================================
+   A4 PAGE (the actual CV document)
+   ================================================================ */
+.cv-page {
+    width: 794px; min-height: 1123px;
+    background: #fff; color: #111;
+    font-family: 'Geist', Arial, sans-serif;
+    box-shadow: 0 8px 48px rgba(0,0,0,.7);
+    position: relative;
+}
+
+/* Section interaction (editor chrome — hidden in PDF) */
+.cv-section {
+    position: relative; cursor: pointer;
+}
+.cv-section:hover   { outline: 1.5px solid rgba(199,114,254,.35); outline-offset: -1px; }
+.cv-section.selected { outline: 1.5px solid var(--accent); outline-offset: -1px; }
+
+.cv-section-drag-handle {
+    position: absolute; left: -22px; top: 50%;
+    transform: translateY(-50%);
+    opacity: 0; cursor: grab; color: #999; font-size: 14px; line-height: 1;
+    transition: opacity var(--transition);
+    user-select: none;
+}
+.cv-section:hover .cv-section-drag-handle { opacity: 1; }
+.cv-section.dragging { opacity: .35; }
+
+/* ── Classic layout ── */
+.cv-page.layout-classic .cv-header-section {
+    padding: 36px 48px 26px;
+    border-bottom: 3px solid var(--cv-accent, #c772fe);
+}
+.cv-page.layout-classic .cv-body {
+    padding: 28px 48px;
+    display: flex; flex-direction: column; gap: 22px;
+}
+
+/* ── Modern layout (two columns) ── */
+.cv-page.layout-modern { display: flex; min-height: 1123px; }
+.cv-page.layout-modern .cv-col-left {
+    width: 210px; flex-shrink: 0;
+    background: var(--cv-accent, #c772fe);
+    color: #fff; padding: 32px 20px;
+    display: flex; flex-direction: column; gap: 22px;
+}
+.cv-page.layout-modern .cv-col-right {
+    flex: 1; padding: 32px;
+    display: flex; flex-direction: column; gap: 22px;
+}
+
+/* ── Minimal layout ── */
+.cv-page.layout-minimal .cv-header-section { padding: 52px 60px 24px; }
+.cv-page.layout-minimal .cv-body {
+    padding: 8px 60px 52px;
+    display: flex; flex-direction: column; gap: 28px;
+}
+
+/* CV content typography */
+.cv-header-name {
+    font-size: 28px; font-weight: 700; line-height: 1.15;
+    color: #111; letter-spacing: -.02em;
+}
+.cv-header-title {
+    font-size: 14px; margin-top: 4px;
+    color: var(--cv-accent, #c772fe); font-weight: 400;
+}
+.cv-header-contacts {
+    display: flex; flex-wrap: wrap; gap: 10px 16px;
+    margin-top: 12px; font-size: 11.5px; color: #555;
+}
+.cv-header-contact-item { display: flex; align-items: center; gap: 5px; }
+
+.cv-sec-title {
+    font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .12em; color: var(--cv-accent, #c772fe);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+}
+.cv-sec-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: currentColor; opacity: .2;
+}
+
+.cv-entry { margin-bottom: 13px; }
+.cv-entry:last-child { margin-bottom: 0; }
+.cv-entry-header {
+    display: flex; justify-content: space-between;
+    align-items: baseline; flex-wrap: wrap; gap: 6px;
+}
+.cv-entry-title  { font-size: 13.5px; font-weight: 600; color: #111; }
+.cv-entry-sub    { font-size: 12px; color: #555; margin-top: 1px; }
+.cv-entry-date   { font-size: 11px; color: #888; white-space: nowrap; }
+.cv-entry-desc   { font-size: 12px; color: #444; margin-top: 6px; line-height: 1.55; white-space: pre-wrap; }
+
+.cv-skills-list  { display: flex; flex-wrap: wrap; gap: 6px; }
+.cv-skill-tag {
+    padding: 2px 9px; font-size: 11.5px; font-weight: 500;
+    background: rgba(0,0,0,.06); color: #333;
+}
+.cv-summary-text { font-size: 12.5px; color: #444; line-height: 1.6; white-space: pre-wrap; }
+
+/* ================================================================
+   ADD SECTION BAR (below the A4 page)
+   ================================================================ */
+#cv-add-section-bar { position: relative; }
+
+.cv-add-section-btn {
+    display: flex; align-items: center; gap: 7px;
+    width: 794px; padding: 9px 16px;
+    background: var(--bg-secondary); border: 1px dashed rgba(236,232,223,.12);
+    color: var(--text-muted); font-family: inherit; font-size: 12px;
+    cursor: pointer; transition: all var(--transition);
+}
+.cv-add-section-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.cv-add-section-menu {
+    position: absolute; top: calc(100% + 4px); left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 4px; z-index: 200;
+    display: none; box-shadow: 0 8px 32px rgba(0,0,0,.6);
+    min-width: 180px;
+}
+.cv-add-section-menu.open { display: block; }
+.cv-add-section-menu button {
+    display: block; width: 100%; padding: 8px 12px; text-align: left;
+    background: none; border: none;
+    color: var(--text-secondary); font-family: inherit; font-size: 13px;
+    cursor: pointer; transition: background var(--transition), color var(--transition);
+}
+.cv-add-section-menu button:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+/* ================================================================
+   RIGHT EDIT PANEL
+   ================================================================ */
+#cv-edit-panel {
+    width: var(--panel-w); flex-shrink: 0;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+}
+#cv-edit-panel-inner { padding: 16px; }
+
+.cv-edit-empty {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; padding: 40px 16px;
+    color: var(--text-muted); text-align: center;
+}
+.cv-edit-empty p { font-size: 12px; line-height: 1.6; }
+
+/* Edit form */
+.cv-edit-section-title {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+.cv-edit-section-name { font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
+.cv-edit-section-actions { display: flex; gap: 2px; }
+
+.cv-form-group { margin-bottom: 11px; }
+.cv-form-label {
+    display: block; font-size: 10px; font-weight: 600;
+    color: var(--text-muted); margin-bottom: 5px;
+    text-transform: uppercase; letter-spacing: .08em;
+}
+.cv-form-input, .cv-form-textarea {
+    width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+    color: var(--text-primary); font-family: inherit; font-size: 12.5px;
+    padding: 7px 10px; outline: none;
+    transition: border-color var(--transition);
+}
+.cv-form-input:focus, .cv-form-textarea:focus { border-color: var(--accent); }
+.cv-form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+/* Entry cards in edit panel */
+.cv-entry-list { display: flex; flex-direction: column; gap: 6px; }
+.cv-entry-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+}
+.cv-entry-card-header {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 10px; cursor: pointer;
+    transition: background var(--transition);
+}
+.cv-entry-card-header:hover { background: var(--bg-card-hover); }
+.cv-entry-card-label {
+    flex: 1; font-size: 12px; color: var(--text-secondary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cv-entry-card-body { padding: 10px; border-top: 1px solid var(--border); }
+.cv-entry-card-body.closed { display: none; }
+
+.cv-btn-add-entry {
+    width: 100%; margin-top: 8px; padding: 7px;
+    background: var(--bg-card); border: 1px dashed rgba(236,232,223,.12);
+    color: var(--text-muted); font-family: inherit; font-size: 12px;
+    cursor: pointer; transition: all var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.cv-btn-add-entry:hover { border-color: var(--accent); color: var(--accent); }
+
+.cv-btn-delete-entry {
+    margin-top: 8px; padding: 5px 10px;
+    background: none; border: 1px solid rgba(224,85,85,.25);
+    color: var(--danger); font-family: inherit; font-size: 11px;
+    cursor: pointer; transition: background var(--transition);
+}
+.cv-btn-delete-entry:hover { background: rgba(224,85,85,.1); }
+
+/* Checkbox */
+.cv-form-check { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.cv-form-check input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--accent); }
+.cv-form-check label { font-size: 12px; color: var(--text-muted); cursor: pointer; }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 900px) {
+    #app-cv { --panel-w: 260px; }
+}
+@media (max-width: 768px) {
+    #cv-sidebar, #cv-edit-panel { display: none; }
+}
+@media (max-width: 700px) {
+    .cv-btn-label, .cv-title-sep { display: none; }
+    .cv-title-input { flex: 0 1 140px; }
+}

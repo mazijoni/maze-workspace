@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="workspace.css">
+    <link rel="stylesheet" href="cv.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 </head>
 <body>
@@ -33,8 +34,11 @@
         <button class="hub-app-btn" data-app="gmail" title="Gmail">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
         </button>
-        <button class="hub-app-btn" data-app="bluemap" id="hub-btn-bluemap" title="ServerMap">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+        <button class="hub-app-btn" data-app="bluemap" id="hub-btn-bluemap" title="Web Viewer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </button>
+        <button class="hub-app-btn" data-app="cv" title="CV Builder">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         </button>
     </div>
     <div class="hub-nav-footer">
@@ -782,15 +786,103 @@
     </div>
 </div><!-- /app-gmail -->
 
-<!-- ── APP: BLUEMAP ── -->
+<!-- ── APP: WEB VIEWER ── -->
 <div id="app-bluemap" class="hub-app">
     <div class="bluemap-bar">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.6"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-        <input id="bluemap-url" class="bluemap-input bluemap-input--url" type="url" value="https://server.tail8d3368.ts.net/" placeholder="https://… or http://…" aria-label="ServerMap URL" spellcheck="false">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.6"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <input id="bluemap-url" class="bluemap-input bluemap-input--url" type="url" placeholder="https://…" aria-label="URL to embed" spellcheck="false">
         <button id="bluemap-go" class="ws-btn ws-btn-accent ws-btn-sm">Go</button>
     </div>
     <div id="bluemap-content" class="bluemap-content"></div>
 </div><!-- /app-bluemap -->
+
+<!-- ── APP: CV BUILDER ── -->
+<div id="app-cv" class="hub-app">
+    <div class="cv-header">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>CV Builder</span>
+        <span class="cv-title-sep">/</span>
+        <input type="text" id="cv-title-input" class="cv-title-input" placeholder="Untitled CV" maxlength="80">
+        <div class="cv-header-right">
+            <div class="cv-theme-picker" id="cv-theme-picker">
+                <button class="cv-tb-btn" id="cv-theme-btn" title="Theme">
+                    <span id="cv-theme-swatch" class="cv-theme-swatch" style="background:#2563eb"></span>
+                    <span class="cv-btn-label">Theme</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="cv-theme-dropdown" id="cv-theme-dropdown">
+                    <div class="cv-theme-section-label">Accent color</div>
+                    <div class="cv-color-grid" id="cv-color-grid"></div>
+                    <div class="cv-theme-section-label" style="margin-top:10px">Layout</div>
+                    <div class="cv-layout-options" id="cv-layout-options">
+                        <button class="cv-layout-opt active" data-layout="classic">Classic</button>
+                        <button class="cv-layout-opt" data-layout="modern">Modern</button>
+                        <button class="cv-layout-opt" data-layout="minimal">Minimal</button>
+                    </div>
+                </div>
+            </div>
+            <label class="cv-tb-btn" title="Import PDF as editable CV" id="cv-import-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span class="cv-btn-label">Import PDF</span>
+                <input type="file" id="cv-pdf-import" accept=".pdf" style="display:none">
+            </label>
+            <button class="cv-tb-btn cv-tb-btn-primary" id="cv-export-btn" title="Export as PDF">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span class="cv-btn-label">Export PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="cv-body-wrap">
+        <aside id="cv-sidebar">
+            <div class="cv-sidebar-header">
+                <span>My CVs</span>
+                <button class="cv-icon-btn" id="cv-new-btn" title="New CV">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+            <div id="cv-list" class="cv-list">
+                <div class="cv-list-empty">No CVs yet.<br>Click + to create one.</div>
+            </div>
+        </aside>
+
+        <main id="cv-canvas-wrap">
+            <div id="cv-no-selection" class="cv-empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".25"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <p>Select a CV or create a new one</p>
+            </div>
+
+<div id="cv-page" class="cv-page" style="display:none">
+                <!-- rendered by JS -->
+            </div>
+
+            <div id="cv-add-section-bar" style="display:none">
+                <button class="cv-add-section-btn" id="cv-add-section-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add section
+                </button>
+                <div class="cv-add-section-menu" id="cv-add-section-menu">
+                    <button data-type="experience">Work Experience</button>
+                    <button data-type="education">Education</button>
+                    <button data-type="skills">Skills</button>
+                    <button data-type="languages">Languages</button>
+                    <button data-type="projects">Projects</button>
+                    <button data-type="awards">Awards &amp; Certs</button>
+                    <button data-type="custom">Custom Section</button>
+                </div>
+            </div>
+        </main>
+
+        <aside id="cv-edit-panel">
+            <div id="cv-edit-panel-inner">
+                <div class="cv-edit-empty">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <p>Click a section to edit</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div><!-- /app-cv -->
 
 <!-- ── APP: SETTINGS / HELP ── -->
 <div id="app-settings" class="hub-app">
@@ -843,6 +935,10 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg>
                 <span>Keyboard Shortcuts</span>
             </button>
+            <button class="tut-nav-item" data-page="cv">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>CV Builder</span>
+            </button>
         </nav>
 
         <!-- Pages -->
@@ -851,12 +947,15 @@
             <!-- ── Visible Tabs ── -->
             <div class="tut-page active" id="tut-tabs">
                 <h1 class="tut-h1">Visible Tabs</h1>
-                <p class="tut-lead">Choose which apps appear in the sidebar. Workspace and Settings are always visible.</p>
+                <p class="tut-lead">Choose which apps appear in the left sidebar. <strong>Workspace</strong> and <strong>Settings</strong> are always visible.</p>
                 <div class="hub-tabs-settings">
                     <div class="hub-tab-row">
+                        <div class="hub-tab-row-icon" style="background:rgba(199,114,254,.12);color:#c772fe">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        </div>
                         <div class="hub-tab-row-info">
                             <div class="hub-tab-row-label">Link Gallery</div>
-                            <div class="hub-tab-row-sub">Bookmarks, streaming hub, and more</div>
+                            <div class="hub-tab-row-sub">Bookmarks, streaming hub, and media</div>
                         </div>
                         <label class="hub-toggle-switch">
                             <input type="checkbox" class="hub-tab-toggle" data-app="links" checked>
@@ -864,16 +963,22 @@
                         </label>
                     </div>
                     <div class="hub-tab-row">
+                        <div class="hub-tab-row-icon" style="background:rgba(0,159,227,.12);color:#009FE3">
+                            <svg viewBox="0 0 226.683 233.658" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M 99.722 231.541 C 101.585 233.574 104.305 233.076 105.56 230.435 C 135.35 167.569 225.843 139.135 225.843 59.033 C 225.843 29.922 206.246 0.69 168.566 0.013 C 132.699 -0.635 100.509 22.469 97.152 59.87 C 96.145 36.188 80.613 25.269 62.7 25.269 C 27.461 25.269 -1.402 57.081 0.053 104.952 C 2.474 180.242 74.855 203.964 99.722 231.541 Z"/></svg>
+                        </div>
                         <div class="hub-tab-row-info">
                             <div class="hub-tab-row-label">Eurovision 2026 Tracker</div>
-                            <div class="hub-tab-row-sub">Track scores and votes</div>
+                            <div class="hub-tab-row-sub">Score tracker and voting results</div>
                         </div>
                         <label class="hub-toggle-switch">
-                            <input type="checkbox" class="hub-tab-toggle" data-app="sheet">
+                            <input type="checkbox" class="hub-tab-toggle" data-app="sheet" checked>
                             <span class="hub-toggle-track"></span>
                         </label>
                     </div>
                     <div class="hub-tab-row">
+                        <div class="hub-tab-row-icon" style="background:rgba(66,133,244,.12);color:#4285F4">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+                        </div>
                         <div class="hub-tab-row-info">
                             <div class="hub-tab-row-label">Gmail</div>
                             <div class="hub-tab-row-sub">Quick email access</div>
@@ -884,12 +989,28 @@
                         </label>
                     </div>
                     <div class="hub-tab-row">
+                        <div class="hub-tab-row-icon" style="background:rgba(100,116,139,.12);color:#94a3b8">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        </div>
                         <div class="hub-tab-row-info">
-                            <div class="hub-tab-row-label">ServerMap</div>
-                            <div class="hub-tab-row-sub">Minecraft world map viewer</div>
+                            <div class="hub-tab-row-label">Web Viewer</div>
+                            <div class="hub-tab-row-sub">Embed any HTTPS website in the sidebar</div>
                         </div>
                         <label class="hub-toggle-switch">
                             <input type="checkbox" class="hub-tab-toggle" data-app="bluemap">
+                            <span class="hub-toggle-track"></span>
+                        </label>
+                    </div>
+                    <div class="hub-tab-row">
+                        <div class="hub-tab-row-icon" style="background:rgba(37,99,235,.12);color:#60a5fa">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        </div>
+                        <div class="hub-tab-row-info">
+                            <div class="hub-tab-row-label">CV Builder</div>
+                            <div class="hub-tab-row-sub">Create and export CVs without leaving the workspace</div>
+                        </div>
+                        <label class="hub-toggle-switch">
+                            <input type="checkbox" class="hub-tab-toggle" data-app="cv" checked>
                             <span class="hub-toggle-track"></span>
                         </label>
                     </div>
@@ -930,7 +1051,7 @@
                         <div class="tut-step-num">3</div>
                         <div class="tut-step-body">
                             <strong>Use the hub apps</strong>
-                            <p>Switch between apps using the icon bar on the far left: <span class="tut-ui">Workspace</span>, <span class="tut-ui">Link Gallery</span>, <span class="tut-ui">Gmail</span>, and <span class="tut-ui">ServerMap</span>.</p>
+                            <p>Switch between apps using the icon bar on the far left: <span class="tut-ui">Workspace</span>, <span class="tut-ui">Link Gallery</span>, <span class="tut-ui">Gmail</span>, <span class="tut-ui">Web Viewer</span>, and <span class="tut-ui">CV Builder</span>. Toggle which icons are visible in <span class="tut-ui">Settings → Visible Tabs</span>.</p>
                         </div>
                     </div>
                     <div class="tut-step">
@@ -968,6 +1089,15 @@
                         <div class="tut-card-body">
                             <strong>Media &amp; Links</strong>
                             <span>Images · videos · sites · organised by project</span>
+                        </div>
+                    </div>
+                    <div class="tut-card">
+                        <div class="tut-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        </div>
+                        <div class="tut-card-body">
+                            <strong>CV Builder</strong>
+                            <span>Multiple CVs · templates · PDF export &amp; import</span>
                         </div>
                     </div>
                 </div>
@@ -1274,6 +1404,72 @@
                 <div class="tut-kbd-table">
                     <div class="tut-kbd-row"><kbd>Click card</kbd><span>Open URL in new tab</span></div>
                     <div class="tut-kbd-row"><kbd>Ctrl + search</kbd><span>Focus the search bar</span></div>
+                </div>
+            </div>
+
+            <!-- ── CV Builder ── -->
+            <div class="tut-page" id="tut-cv">
+                <h1 class="tut-h1">CV Builder</h1>
+                <p class="tut-lead">Design, edit, and export professional CVs — all saved to your account so you can pick up where you left off from any device.</p>
+
+                <h2 class="tut-h2">Opening CV Builder</h2>
+                <p>Click the <span class="tut-ui">CV</span> icon in the left sidebar to switch into the CV Builder — same account, no separate sign-in.</p>
+
+                <h2 class="tut-h2">Managing multiple CVs</h2>
+                <ol class="tut-list">
+                    <li>Click <span class="tut-ui">+</span> in the left panel to create a new CV.</li>
+                    <li>Click a CV in the list to open it. Your last-used CV is remembered.</li>
+                    <li>Hover a CV and click <span class="tut-ui">⋮</span> to rename, duplicate, or delete it.</li>
+                </ol>
+
+                <h2 class="tut-h2">Editing your CV</h2>
+                <p>The centre panel shows a live A4 preview. Click any section to select it — the right panel switches to an edit form for that section. Changes save automatically to Firestore.</p>
+
+                <div class="tut-table-wrap">
+                    <table class="tut-table">
+                        <thead><tr><th>Section</th><th>What you can add</th></tr></thead>
+                        <tbody>
+                            <tr><td>Personal Info</td><td>Name, job title, email, phone, location, LinkedIn, GitHub, website, summary</td></tr>
+                            <tr><td>Work Experience</td><td>Role, company, dates, current-job toggle, description</td></tr>
+                            <tr><td>Education</td><td>Institution, degree, field, dates, GPA, notes</td></tr>
+                            <tr><td>Skills</td><td>Skill name + optional level (e.g. Advanced)</td></tr>
+                            <tr><td>Languages</td><td>Language + proficiency level</td></tr>
+                            <tr><td>Projects</td><td>Name, URL, tech stack, description</td></tr>
+                            <tr><td>Awards &amp; Certs</td><td>Title, issuer, date, description</td></tr>
+                            <tr><td>Custom Section</td><td>Free-text content with a custom heading</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="tut-h2">Adding &amp; reordering sections</h2>
+                <ul class="tut-list">
+                    <li>Click <span class="tut-ui">+ Add section</span> below the CV preview and choose a type.</li>
+                    <li>Drag any section by its handle (⠿) to change the order.</li>
+                    <li>Remove a section with the trash icon in the right edit panel.</li>
+                </ul>
+
+                <h2 class="tut-h2">Theme</h2>
+                <p>Click <span class="tut-ui">Theme</span> in the top bar to pick an accent colour and layout:</p>
+                <div class="tut-table-wrap">
+                    <table class="tut-table">
+                        <thead><tr><th>Layout</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td>Classic</td><td>Single column with a coloured header underline — clean and ATS-friendly</td></tr>
+                            <tr><td>Modern</td><td>Two-column: coloured sidebar with contact/skills, main content on the right</td></tr>
+                            <tr><td>Minimal</td><td>Wide margins, minimal decoration — maximises readability</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="tut-h2">Exporting as PDF</h2>
+                <p>Click <span class="tut-ui">Export PDF</span> in the top bar. The page is rendered to a high-resolution A4 PDF and downloaded automatically.</p>
+
+                <h2 class="tut-h2">Importing a PDF</h2>
+                <p>Click <span class="tut-ui">Import PDF</span> to load an existing CV PDF as a reference image. It appears above your editable CV so you can refer to it while filling in your sections. The reference image is not saved — it is only shown for the current session.</p>
+
+                <div class="tut-callout tut-callout--info">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    CV data is stored privately in your Firestore account under <code>users/{uid}/cvs</code>. No one else can see your CVs.
                 </div>
             </div>
 
